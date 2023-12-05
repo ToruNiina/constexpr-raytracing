@@ -6,12 +6,20 @@
 
 #include <cstdint>
 
+// compile-time arguments
+
+#ifndef IMAGE_SIZE_X
+#  define IMAGE_SIZE_X 640
+#endif
+
+#ifndef IMAGE_SIZE_Y
+#  define IMAGE_SIZE_Y 480
+#endif
+
+// code
+
 #define STRINGIZE(x) STRINGIZE_AUX(x)
 #define STRINGIZE_AUX(x) #x
-
-// compile-time argument
-#define IMAGE_SIZE_X 640
-#define IMAGE_SIZE_Y 480
 
 struct color
 {
