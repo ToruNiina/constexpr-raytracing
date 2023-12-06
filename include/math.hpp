@@ -11,13 +11,13 @@ namespace math
 constexpr inline std::size_t sqrt_N = 256;
 constexpr inline double sqrt_dx = (1.0 - 0.5) / sqrt_N;
 constexpr inline double sqrt_a[sqrt_N] = {
-#include "sqrt_a.dat"
+#include "parameters/sqrt_a.dat"
 };
 constexpr inline double sqrt_b[sqrt_N] = {
-#include "sqrt_b.dat"
+#include "parameters/sqrt_b.dat"
 };
 constexpr inline double sqrt_c[sqrt_N] = {
-#include "sqrt_c.dat"
+#include "parameters/sqrt_c.dat"
 };
 
 constexpr double sqrt_interp(const double x)
@@ -80,13 +80,13 @@ constexpr double sqrt(const double x)
 constexpr inline std::size_t rsqrt_N = 256;
 constexpr inline double rsqrt_dx = (1.0 - 0.5) / rsqrt_N;
 constexpr inline double rsqrt_a[rsqrt_N] = {
-#include "rsqrt_a.dat"
+#include "parameters/rsqrt_a.dat"
 };
 constexpr inline double rsqrt_b[rsqrt_N] = {
-#include "rsqrt_b.dat"
+#include "parameters/rsqrt_b.dat"
 };
 constexpr inline double rsqrt_c[rsqrt_N] = {
-#include "rsqrt_c.dat"
+#include "parameters/rsqrt_c.dat"
 };
 
 constexpr double rsqrt_interp(const double x)
