@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+namespace conray
+{
 namespace math
 {
 
@@ -147,4 +149,5 @@ constexpr double rsqrt(const double x)
 }
 
 } // math
+} // conray
 #endif// CONSTEXPR_RAYTRACING_MATH_HPP
