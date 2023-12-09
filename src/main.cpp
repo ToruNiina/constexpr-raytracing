@@ -47,16 +47,31 @@ make_image(const camera& cam, const world<N>& w)
     for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
     {
         const std::size_t offset = IMAGE_SIZE_X * y;
-        const auto v_offset = cam.pixel_width_v * (y + 0.5);
+
+        const auto v_offset = cam.pixel_width_v * y;
+        const auto pixel_v_coord = cam.viewport_upper_left + v_offset;
         for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
         {
-            const auto u_offset = cam.pixel_width_u * (x + 0.5);
-            const auto pixel_center = cam.viewport_upper_left + v_offset + u_offset;
-            const auto ray_direction = math::normalize(pixel_center - cam.position);
+            const auto u_offset = cam.pixel_width_u * x;
+            const auto pixel_upper_left = pixel_v_coord + u_offset;
 
-            const auto r = ray{ cam.position, ray_direction };
+            // anti-alias by using 2x2 = 4 points
+            color col{0.0, 0.0, 0.0};
+            for(std::size_t sx=0; sx<2; ++sx)
+            {
+                for(std::size_t sy=0; sy<2; ++sy)
+                {
+                    const auto target_pixel = pixel_upper_left +
+                        cam.pixel_width_u * sx / 3.0 +
+                        cam.pixel_width_v * sy / 3.0 ;
+                    const auto ray_direction = math::normalize(target_pixel - cam.position);
+                    const auto r = ray{ cam.position, ray_direction };
+                    col += ray_color(r, w);
+                }
+            }
+            col *= 0.25;
 
-            image[offset+x] = to_pixel(ray_color(r, w));
+            image[offset+x] = to_pixel(col);
         }
     }
     return image;
