@@ -11,13 +11,6 @@
 #include "color.hpp"
 #include "ray.hpp"
 
-#ifndef IMAGE_SIZE_X
-#  define IMAGE_SIZE_X 640
-#endif
-
-#ifndef IMAGE_SIZE_Y
-#  define IMAGE_SIZE_Y 480
-#endif
 
 #define STRINGIZE(x) STRINGIZE_AUX(x)
 #define STRINGIZE_AUX(x) #x
