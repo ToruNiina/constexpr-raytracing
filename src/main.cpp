@@ -28,8 +28,8 @@ constexpr color ray_color(const ray& r, const world<N>& w)
     {
         return color {
             .r = 0.5 * (hit->normal.x + 1.0),
-            .g = 0.5 * (hit->normal.x + 1.0),
-            .b = 0.5 * (hit->normal.x + 1.0),
+            .g = 0.5 * (hit->normal.y + 1.0),
+            .b = 0.5 * (hit->normal.z + 1.0),
         };
     }
     const double a = 0.5 * (r.direction.y + 1.0);
