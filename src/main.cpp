@@ -6,7 +6,10 @@
 
 #include <cstdint>
 
-// compile-time arguments
+#include "math.hpp"
+#include "vector.hpp"
+#include "color.hpp"
+#include "ray.hpp"
 
 #ifndef IMAGE_SIZE_X
 #  define IMAGE_SIZE_X 640
@@ -16,39 +19,45 @@
 #  define IMAGE_SIZE_Y 480
 #endif
 
-// code
-
 #define STRINGIZE(x) STRINGIZE_AUX(x)
 #define STRINGIZE_AUX(x) #x
 
-struct color
-{
-    std::uint8_t r;
-    std::uint8_t g;
-    std::uint8_t b;
-};
+#include "config.hpp"
 
-constexpr std::array<color, IMAGE_SIZE_X * IMAGE_SIZE_Y>
+namespace conray
+{
+
+constexpr color ray_color(const ray& r)
+{
+    const double a = 0.5 * (r.direction.y + 1.0);
+    return (1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0};
+}
+
+constexpr std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>
 make_image()
 {
-    std::array<color, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
+    std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
 
     for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
     {
         const std::size_t offset = IMAGE_SIZE_X * y;
+        const auto v_offset = pixel_width_v * (y + 0.5);
         for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
         {
-            auto& [r, g, b] = image[offset + x];
-            r = static_cast<std::uint8_t>(255.999 * x / IMAGE_SIZE_X);
-            g = static_cast<std::uint8_t>(255.999 * y / IMAGE_SIZE_Y);
-            b = 0;
+            const auto u_offset = pixel_width_u * (x + 0.5);
+            const auto pixel_center = viewport_upper_left + v_offset + u_offset;
+            const auto ray_direction = math::normalize(pixel_center - camera_position);
+
+            const auto r = ray{ camera_position, ray_direction };
+
+            image[offset+x] = to_pixel(ray_color(r));
         }
     }
     return image;
 }
 
 constexpr auto
-make_ppm(const std::array<color, IMAGE_SIZE_X * IMAGE_SIZE_Y>& image)
+make_ppm(const std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>& image)
 {
     constexpr auto header_string =
         "P6\n" STRINGIZE(IMAGE_SIZE_X) " " STRINGIZE(IMAGE_SIZE_Y) "\n255\n";
@@ -76,6 +85,7 @@ make_ppm(const std::array<color, IMAGE_SIZE_X * IMAGE_SIZE_Y>& image)
     }
     return retval;
 }
+} // conray
 
 int main(int argc, char** argv)
 {
@@ -85,7 +95,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    constexpr auto ppm = make_ppm(make_image());
+    constexpr auto ppm = conray::make_ppm(conray::make_image());
 
     std::ofstream ofs(argv[1]);
     if(!ofs.good())
