@@ -10,6 +10,7 @@
 #include "vector.hpp"
 #include "color.hpp"
 #include "ray.hpp"
+#include "world.hpp"
 
 
 #define STRINGIZE(x) STRINGIZE_AUX(x)
@@ -20,14 +21,24 @@
 namespace conray
 {
 
-constexpr color ray_color(const ray& r)
+template<std::size_t N>
+constexpr color ray_color(const ray& r, const world<N>& w)
 {
+    if(const auto hit = collides(r, w, 0, std::numeric_limits<double>::max()))
+    {
+        return color {
+            .r = 0.5 * (hit->normal.x + 1.0),
+            .g = 0.5 * (hit->normal.x + 1.0),
+            .b = 0.5 * (hit->normal.x + 1.0),
+        };
+    }
     const double a = 0.5 * (r.direction.y + 1.0);
     return (1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0};
 }
 
+template<std::size_t N>
 constexpr std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>
-make_image()
+make_image(const world<N>& w)
 {
     std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
 
@@ -43,7 +54,7 @@ make_image()
 
             const auto r = ray{ camera_position, ray_direction };
 
-            image[offset+x] = to_pixel(ray_color(r));
+            image[offset+x] = to_pixel(ray_color(r, w));
         }
     }
     return image;
@@ -88,7 +99,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    constexpr auto ppm = conray::make_ppm(conray::make_image());
+    constexpr auto ppm = conray::make_ppm(conray::make_image(conray::w));
 
     std::ofstream ofs(argv[1]);
     if(!ofs.good())

@@ -28,7 +28,12 @@ constexpr inline auto pixel_width_u = viewport_u / IMAGE_SIZE_X;
 constexpr inline auto pixel_width_v = viewport_v / IMAGE_SIZE_Y;
 
 constexpr inline auto screen_center = camera_position - math::vector(0, 0, focal_length);
-constexpr inline auto viewport_upper_left = screen_center - viewport_u*0.5 - viewport_v*0.5;
+constexpr inline auto viewport_upper_left = screen_center - viewport_u * 0.5 - viewport_v * 0.5;
+
+constexpr inline world w = make_world(
+        sphere{math::vector{0.0,   0.0, -1.0},   0.5},
+        sphere{math::vector{0.0,-100.5, -1.0}, 100.0}
+    );
 
 } // conray
 #endif // CONSTEXPR_RAYTRACING_CONFIG_HPP
