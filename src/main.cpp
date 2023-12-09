@@ -8,6 +8,8 @@
 
 #include "math.hpp"
 #include "vector.hpp"
+
+#include "camera.hpp"
 #include "color.hpp"
 #include "ray.hpp"
 #include "world.hpp"
@@ -38,21 +40,21 @@ constexpr color ray_color(const ray& r, const world<N>& w)
 
 template<std::size_t N>
 constexpr std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>
-make_image(const world<N>& w)
+make_image(const camera& cam, const world<N>& w)
 {
     std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
 
     for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
     {
         const std::size_t offset = IMAGE_SIZE_X * y;
-        const auto v_offset = pixel_width_v * (y + 0.5);
+        const auto v_offset = cam.pixel_width_v * (y + 0.5);
         for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
         {
-            const auto u_offset = pixel_width_u * (x + 0.5);
-            const auto pixel_center = viewport_upper_left + v_offset + u_offset;
-            const auto ray_direction = math::normalize(pixel_center - camera_position);
+            const auto u_offset = cam.pixel_width_u * (x + 0.5);
+            const auto pixel_center = cam.viewport_upper_left + v_offset + u_offset;
+            const auto ray_direction = math::normalize(pixel_center - cam.position);
 
-            const auto r = ray{ camera_position, ray_direction };
+            const auto r = ray{ cam.position, ray_direction };
 
             image[offset+x] = to_pixel(ray_color(r, w));
         }
@@ -99,7 +101,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    constexpr auto ppm = conray::make_ppm(conray::make_image(conray::w));
+    constexpr auto ppm = conray::make_ppm(conray::make_image(conray::cam, conray::w));
 
     std::ofstream ofs(argv[1]);
     if(!ofs.good())
