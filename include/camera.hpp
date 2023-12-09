@@ -38,9 +38,6 @@ struct camera
     math::vector viewport_upper_left;
 };
 
-
-
-
-} // world
+} // conray
 #endif//CONSTEXPR_RAYTRACING_WORLD_HPP
 
