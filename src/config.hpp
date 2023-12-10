@@ -8,11 +8,15 @@
 #include "material.hpp"
 
 #ifndef IMAGE_SIZE_X
-#  define IMAGE_SIZE_X 320
+#  define IMAGE_SIZE_X 400
 #endif
 
 #ifndef IMAGE_SIZE_Y
-#  define IMAGE_SIZE_Y 240
+#  define IMAGE_SIZE_Y 200
+#endif
+
+#ifndef RAYTRACE_RECURSION_LIMIT
+#define RAYTRACE_RECURSION_LIMIT 8
 #endif
 
 namespace conray
@@ -29,7 +33,11 @@ constexpr inline world w = make_world(
             .material = dielectric{1.5},
             .shape = sphere{math::vector{-1.0,  0.0, -1.0},   0.5}
         },
-
+        object{
+            .attenuation = color{1.0, 1.0, 1.0},
+            .material = dielectric{1.5},
+            .shape = sphere{math::vector{-1.0,  0.0, -1.0},  -0.4}
+        },
         object{
             .attenuation = color{0.8, 0.6, 0.2},
             .material = metallic{},

@@ -27,7 +27,7 @@ template<std::size_t N>
 constexpr std::pair<color, xorshift64>
 ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size_t depth)
 {
-    if(depth > 4)
+    if(depth > RAYTRACE_RECURSION_LIMIT)
     {
         return std::make_pair(color{0, 0, 0}, rng);
     }
