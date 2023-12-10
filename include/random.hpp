@@ -28,8 +28,8 @@ constexpr std::pair<double, xorshift64> uniform_12(const xorshift64 rng) noexcep
 
     const std::uint64_t mantissa_mask   = (1ull << 52) - 1;
     const std::uint64_t random_mantissa = nrng.state & mantissa_mask;
-    const std::uint64_t exponent_bias   = 1023 << 52;
-    const std::uint64_t float64         = exponent_bias + random_mantissa
+    const std::uint64_t exponent_bias   = 1023ull << 52;
+    const std::uint64_t float64         = exponent_bias + random_mantissa;
 
     return std::make_pair(std::bit_cast<double>(float64), nrng);
 }
@@ -39,7 +39,8 @@ constexpr std::pair<double, xorshift64> uniform_01(const xorshift64 rng) noexcep
     return std::make_pair(d - 1.0, r);
 }
 
-constexpr double uniform_on_sphere_surface(xorshift64 rng0) noexcept
+constexpr std::pair<math::vector, xorshift64>
+uniform_on_sphere_surface(xorshift64 rng0) noexcept
 {
     while(true)
     {
@@ -51,7 +52,7 @@ constexpr double uniform_on_sphere_surface(xorshift64 rng0) noexcept
         const auto l = length(v);
         if(l <= 1.0)
         {
-            return make_pair(v / l, rng3);
+            return std::make_pair(v / l, rng3);
         }
         rng0 = rng3;
     }
