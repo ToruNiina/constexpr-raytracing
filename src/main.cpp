@@ -101,21 +101,17 @@ make_ppm(const std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>& image)
         (IMAGE_SIZE_X * IMAGE_SIZE_Y * pixel_size);
 
     std::array<std::uint8_t, ppm_size> retval;
-    for(std::size_t i=0; i<header_size; ++i) // -1 for null char
+    for(std::size_t i=0; i<header_size; ++i)
     {
         retval[i] = static_cast<std::uint8_t>(header_string[i]);
     }
     std::size_t idx = header_size;
-    for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
+    for(std::size_t pxl=0; pxl<IMAGE_SIZE_Y * IMAGE_SIZE_X; ++pxl)
     {
-        const std::size_t offset = IMAGE_SIZE_X * y;
-        for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
-        {
-            const auto [r, g, b] = image[offset + x];
-            retval[idx] = r; idx++;
-            retval[idx] = g; idx++;
-            retval[idx] = b; idx++;
-        }
+        const auto [r, g, b] = image[pxl];
+        retval[idx++] = r;
+        retval[idx++] = g;
+        retval[idx++] = b;
     }
     return retval;
 }
