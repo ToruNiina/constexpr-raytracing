@@ -54,38 +54,33 @@ make_image(const camera& cam, const world<N>& w)
     xorshift64 rng(1234567890);
     std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
 
-    for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
+    for(std::size_t pxl=0; pxl<IMAGE_SIZE_Y * IMAGE_SIZE_X; ++pxl)
     {
-        const std::size_t offset = IMAGE_SIZE_X * y;
+        const std::size_t x = pxl % IMAGE_SIZE_X;
+        const std::size_t y = pxl / IMAGE_SIZE_X;
 
-        const auto v_offset = cam.pixel_width_v * (y+0.5);
-        const auto pixel_v_coord = cam.viewport_upper_left + v_offset;
-        for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
+        const auto u_offset = cam.pixel_width_u * x;
+        const auto v_offset = cam.pixel_width_v * y;
+        const auto pixel_upper_left = cam.viewport_upper_left + u_offset + v_offset;
+
+        color col{0.0, 0.0, 0.0};
+        for(std::size_t s=0; s<SAMPLES_PER_PIXEL_SQRT * SAMPLES_PER_PIXEL_SQRT; ++s)
         {
-            const auto u_offset = cam.pixel_width_u * (x+0.5);
-            const auto target_pixel = pixel_v_coord + u_offset;
+            const std::size_t sx = s % SAMPLES_PER_PIXEL_SQRT;
+            const std::size_t sy = s / SAMPLES_PER_PIXEL_SQRT;
+            const auto target_pixel = pixel_upper_left +
+                cam.pixel_width_u * (static_cast<double>(sx) / SAMPLES_PER_PIXEL_SQRT) +
+                cam.pixel_width_v * (static_cast<double>(sy) / SAMPLES_PER_PIXEL_SQRT) ;
 
-            // anti-alias by using 2x2 = 4 points
-            const auto pixel_upper_left = pixel_v_coord + u_offset;
-            color col{0.0, 0.0, 0.0};
-            for(std::size_t sx=0; sx<2; ++sx)
-            {
-                for(std::size_t sy=0; sy<2; ++sy)
-                {
-                    const auto target_pixel = pixel_upper_left +
-                        cam.pixel_width_u * sx / 3.0 +
-                        cam.pixel_width_v * sy / 3.0 ;
-                    const auto ray_direction = math::normalize(target_pixel - cam.position);
-                    const auto r = ray{ cam.position, ray_direction };
-                    const auto [c, nrng] = ray_color(r, w, rng, 0);
-                    col += c;
-                    rng = nrng;
-                }
-            }
-            col *= 0.25;
-
-            image[offset+x] = to_pixel(col);
+            const auto ray_direction = math::normalize(target_pixel - cam.position);
+            const auto r = ray{ cam.position, ray_direction };
+            const auto [c, nrng] = ray_color(r, w, rng, 0);
+            col += c;
+            rng = nrng;
         }
+        col /= static_cast<double>(SAMPLES_PER_PIXEL_SQRT * SAMPLES_PER_PIXEL_SQRT);
+
+        image[pxl] = to_pixel(col);
     }
     return image;
 }

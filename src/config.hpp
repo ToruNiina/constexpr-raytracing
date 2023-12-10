@@ -16,7 +16,11 @@
 #endif
 
 #ifndef RAYTRACE_RECURSION_LIMIT
-#define RAYTRACE_RECURSION_LIMIT 8
+#  define RAYTRACE_RECURSION_LIMIT 16
+#endif
+
+#ifndef SAMPLES_PER_PIXEL_SQRT
+#  define SAMPLES_PER_PIXEL_SQRT 2
 #endif
 
 namespace conray
