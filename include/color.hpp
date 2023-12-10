@@ -68,6 +68,10 @@ constexpr inline color operator*(const color& lhs, const double rhs) noexcept
 {
     return color{lhs.r * rhs, lhs.g * rhs, lhs.b * rhs};
 }
+constexpr inline color operator*(const color& lhs, const color& rhs) noexcept
+{
+    return color{lhs.r * rhs.r, lhs.g * rhs.g, lhs.b * rhs.b};
+}
 constexpr inline color operator/(const color& lhs, const double rhs) noexcept
 {
     return color{lhs.r / rhs, lhs.g / rhs, lhs.b / rhs};
