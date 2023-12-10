@@ -15,7 +15,7 @@ namespace conray
 struct object
 {
     color attenuation;
-    std::variant<diffusive, metallic> material;
+    std::variant<diffusive, metallic, dielectric> material;
     std::variant<sphere> shape;
 };
 
