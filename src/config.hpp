@@ -5,6 +5,7 @@
 #include "vector.hpp"
 #include "world.hpp"
 #include "camera.hpp"
+#include "material.hpp"
 
 #ifndef IMAGE_SIZE_X
 #  define IMAGE_SIZE_X 320
@@ -23,6 +24,12 @@ constexpr inline camera cam(IMAGE_SIZE_X, IMAGE_SIZE_Y,
     /* viewport_height = */ 2.0);
 
 constexpr inline world w = make_world(
+        object{
+            .attenuation = color{1.0, 1.0, 1.0},
+            .material = dielectric{1.5},
+            .shape = sphere{math::vector{-1.0,  0.0, -1.0},   0.5}
+        },
+
         object{
             .attenuation = color{0.8, 0.6, 0.2},
             .material = metallic{},
