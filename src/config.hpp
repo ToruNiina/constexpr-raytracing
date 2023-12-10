@@ -7,11 +7,11 @@
 #include "camera.hpp"
 
 #ifndef IMAGE_SIZE_X
-#  define IMAGE_SIZE_X 640
+#  define IMAGE_SIZE_X 320
 #endif
 
 #ifndef IMAGE_SIZE_Y
-#  define IMAGE_SIZE_Y 480
+#  define IMAGE_SIZE_Y 240
 #endif
 
 namespace conray
