@@ -23,8 +23,8 @@ constexpr inline camera cam(IMAGE_SIZE_X, IMAGE_SIZE_Y,
     /* viewport_height = */ 2.0);
 
 constexpr inline world w = make_world(
-        sphere{math::vector{0.0,   0.0, -1.0},   0.5},
-        sphere{math::vector{0.0,-100.5, -1.0}, 100.0}
+        object{.material = diffusive{}, .shape = sphere{math::vector{0.0,   0.0, -1.0},   0.5}},
+        object{.material = diffusive{}, .shape = sphere{math::vector{0.0,-100.5, -1.0}, 100.0}}
     );
 
 } // conray

@@ -27,13 +27,19 @@ template<std::size_t N>
 constexpr std::pair<color, xorshift64>
 ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size_t depth)
 {
-    if(const auto hit = collides(r, w, 0.001, std::numeric_limits<double>::max());
-            hit.has_value() && depth < 4)
+    if(depth > 4)
     {
-        const auto [dir0, nrng1] = uniform_on_sphere_surface(rng);
-        const auto dir = dir0 + hit->normal;
+        return std::make_pair(color{0, 0, 0}, rng);
+    }
+    if(const auto hit = collides(r, w, 0.001, std::numeric_limits<double>::max()))
+    {
+        const auto& [collision, obj] = *hit;
 
-        const auto [c, nrng2] = ray_color(ray{hit->position, dir}, w, nrng1, depth + 1);
+        const auto [nray, nrng] = std::visit([&collision, rng](const auto& mat) {
+                return scatter(collision, mat, rng);
+            }, obj.material);
+
+        const auto [c, nrng2] = ray_color(nray, w, nrng, depth + 1);
         return std::make_pair(c * 0.5, nrng2);
     }
     const double a = 0.5 * (r.direction.y + 1.0);
