@@ -30,7 +30,7 @@ collides(const ray& r, const sphere& s, const double t_min, const double t_max) 
     if(const auto t = -b - math::sqrt(d); t_min <= t && t <= t_max)
     {
         const auto pos = r.origin + t * r.direction;
-        const auto n   = math::normalize(pos - s.center);
+        const auto n   = (pos - s.center) / s.radius;
 
         return collision_info{ t, n, pos };
     }
@@ -38,7 +38,7 @@ collides(const ray& r, const sphere& s, const double t_min, const double t_max) 
     if(const auto t = -b + math::sqrt(d); t_min <= t && t <= t_max)
     {
         const auto pos = r.origin + t * r.direction;
-        const auto n   = math::normalize(pos - s.center);
+        const auto n   = (pos - s.center) / s.radius;
 
         return collision_info{ t, n, pos };
     }
