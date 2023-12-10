@@ -35,8 +35,8 @@ ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size
     {
         const auto& [collision, obj] = *hit;
 
-        const auto [nray, nrng] = std::visit([&collision, rng](const auto& mat) {
-                return scatter(collision, mat, rng);
+        const auto [nray, nrng] = std::visit([&r, &collision, rng](const auto& mat) {
+                return scatter(r, collision, mat, rng);
             }, obj.material);
 
         const auto [c, nrng2] = ray_color(nray, w, nrng, depth + 1);
