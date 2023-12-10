@@ -11,9 +11,9 @@
 
 #include "camera.hpp"
 #include "color.hpp"
+#include "random.hpp"
 #include "ray.hpp"
 #include "world.hpp"
-
 
 #define STRINGIZE(x) STRINGIZE_AUX(x)
 #define STRINGIZE_AUX(x) #x
@@ -24,38 +24,44 @@ namespace conray
 {
 
 template<std::size_t N>
-constexpr color ray_color(const ray& r, const world<N>& w)
+constexpr std::pair<color, xorshift64>
+ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size_t depth)
 {
-    if(const auto hit = collides(r, w, 0, std::numeric_limits<double>::max()))
+    if(const auto hit = collides(r, w, 0.001, std::numeric_limits<double>::max());
+            hit.has_value() && depth < 4)
     {
-        return color {
-            .r = 0.5 * (hit->normal.x + 1.0),
-            .g = 0.5 * (hit->normal.y + 1.0),
-            .b = 0.5 * (hit->normal.z + 1.0),
-        };
+        const auto [dir0, nrng1] = uniform_on_sphere_surface(rng);
+        const double coef = (math::dot_product(dir0, hit->normal) < 0) ? -1.0 : 1.0;
+        const auto dir = dir0 * coef;
+
+        const auto [c, nrng2] = ray_color(ray{hit->position, dir}, w, nrng1, depth + 1);
+        return std::make_pair(c * 0.5, nrng2);
     }
     const double a = 0.5 * (r.direction.y + 1.0);
-    return (1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0};
+    const color bg = (1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0};
+    return std::make_pair(bg, rng);
 }
 
 template<std::size_t N>
 constexpr std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y>
 make_image(const camera& cam, const world<N>& w)
 {
+    xorshift64 rng(1234567890);
     std::array<pixel, IMAGE_SIZE_X * IMAGE_SIZE_Y> image;
 
     for(std::size_t y=0; y<IMAGE_SIZE_Y; ++y)
     {
         const std::size_t offset = IMAGE_SIZE_X * y;
 
-        const auto v_offset = cam.pixel_width_v * y;
+        const auto v_offset = cam.pixel_width_v * (y+0.5);
         const auto pixel_v_coord = cam.viewport_upper_left + v_offset;
         for(std::size_t x=0; x<IMAGE_SIZE_X; ++x)
         {
-            const auto u_offset = cam.pixel_width_u * x;
-            const auto pixel_upper_left = pixel_v_coord + u_offset;
+            const auto u_offset = cam.pixel_width_u * (x+0.5);
+            const auto target_pixel = pixel_v_coord + u_offset;
 
             // anti-alias by using 2x2 = 4 points
+            const auto pixel_upper_left = pixel_v_coord + u_offset;
             color col{0.0, 0.0, 0.0};
             for(std::size_t sx=0; sx<2; ++sx)
             {
@@ -66,7 +72,9 @@ make_image(const camera& cam, const world<N>& w)
                         cam.pixel_width_v * sy / 3.0 ;
                     const auto ray_direction = math::normalize(target_pixel - cam.position);
                     const auto r = ray{ cam.position, ray_direction };
-                    col += ray_color(r, w);
+                    const auto [c, nrng] = ray_color(r, w, rng, 0);
+                    col += c;
+                    rng = nrng;
                 }
             }
             col *= 0.25;
