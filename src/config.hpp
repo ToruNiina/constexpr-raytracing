@@ -24,6 +24,11 @@ constexpr inline camera cam(IMAGE_SIZE_X, IMAGE_SIZE_Y,
 
 constexpr inline world w = make_world(
         object{
+            .attenuation = color{0.8, 0.6, 0.2},
+            .material = metallic{},
+            .shape = sphere{math::vector{1.0,   0.0, -1.0},   0.5}
+        },
+        object{
             .attenuation = color{0.7, 0.3, 0.3},
             .material = diffusive{},
             .shape = sphere{math::vector{0.0,   0.0, -1.0},   0.5}
