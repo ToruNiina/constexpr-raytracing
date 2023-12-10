@@ -31,8 +31,7 @@ ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size
             hit.has_value() && depth < 4)
     {
         const auto [dir0, nrng1] = uniform_on_sphere_surface(rng);
-        const double coef = (math::dot_product(dir0, hit->normal) < 0) ? -1.0 : 1.0;
-        const auto dir = dir0 * coef;
+        const auto dir = dir0 + hit->normal;
 
         const auto [c, nrng2] = ray_color(ray{hit->position, dir}, w, nrng1, depth + 1);
         return std::make_pair(c * 0.5, nrng2);
