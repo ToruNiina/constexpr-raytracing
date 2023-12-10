@@ -40,7 +40,7 @@ ray_color(const ray& r, const world<N>& w, const xorshift64 rng, const std::size
             }, obj.material);
 
         const auto [c, nrng2] = ray_color(nray, w, nrng, depth + 1);
-        return std::make_pair(c * 0.5, nrng2);
+        return std::make_pair(c * obj.attenuation, nrng2);
     }
     const double a = 0.5 * (r.direction.y + 1.0);
     const color bg = (1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0};

@@ -3,6 +3,7 @@
 
 #include "sphere.hpp"
 #include "material.hpp"
+#include "color.hpp"
 
 #include <array>
 #include <optional>
@@ -13,6 +14,7 @@ namespace conray
 
 struct object
 {
+    color attenuation;
     std::variant<diffusive> material;
     std::variant<sphere>    shape;
 };
