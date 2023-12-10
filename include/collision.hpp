@@ -12,7 +12,6 @@ namespace conray
 
 struct collision_info
 {
-    bool front;
     double t;
     math::vector normal;
     math::vector position;
@@ -30,20 +29,18 @@ collides(const ray& r, const sphere& s, const double t_min, const double t_max) 
 
     if(const auto t = -b - math::sqrt(d); t_min <= t && t <= t_max)
     {
-        const auto pos   = r.origin + t * r.direction;
-        const auto n     = math::normalize(pos - s.center);
-        const auto front = math::dot_product(n, r.direction) >= 0.0;
+        const auto pos = r.origin + t * r.direction;
+        const auto n   = math::normalize(pos - s.center);
 
-        return collision_info{ front, t, n, pos };
+        return collision_info{ t, n, pos };
     }
 
     if(const auto t = -b + math::sqrt(d); t_min <= t && t <= t_max)
     {
-        const auto pos   = r.origin + t * r.direction;
-        const auto n     = math::normalize(pos - s.center);
-        const auto front = math::dot_product(n, r.direction) >= 0.0;
+        const auto pos = r.origin + t * r.direction;
+        const auto n   = math::normalize(pos - s.center);
 
-        return collision_info{ front, t, n, pos };
+        return collision_info{ t, n, pos };
     }
     return std::nullopt;
 }
