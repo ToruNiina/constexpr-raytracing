@@ -86,10 +86,11 @@ struct pixel
 
 constexpr inline pixel to_pixel(const color& col) noexcept
 {
+    // gamma-2
     return pixel{
-        static_cast<std::uint8_t>(255.999 * std::clamp(col.r, 0.0, 1.0)),
-        static_cast<std::uint8_t>(255.999 * std::clamp(col.g, 0.0, 1.0)),
-        static_cast<std::uint8_t>(255.999 * std::clamp(col.b, 0.0, 1.0))
+        static_cast<std::uint8_t>(255.999 * sqrt(std::clamp(col.r, 0.0, 1.0))),
+        static_cast<std::uint8_t>(255.999 * sqrt(std::clamp(col.g, 0.0, 1.0))),
+        static_cast<std::uint8_t>(255.999 * sqrt(std::clamp(col.b, 0.0, 1.0)))
     };
 }
 
